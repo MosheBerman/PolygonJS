@@ -13,7 +13,6 @@
 			var sides = document.getElementById('sides');
 			var angle = document.getElementById('angle');			
 			var scale = document.getElementById('scale');							
-			var submit = document.getElementById('submitButton');
 								
 			/* A rendering function to be used to clear the canvas then draw a poly */					
 			function render(){
@@ -21,13 +20,7 @@
 				drawPolygon(parseFloat(sides.value), parseFloat(scale.value), parseFloat(angle.value));
 			}
 			
-			/* Set up the click handler for the submit button */
-			submit.onclick = function(){
-				render();
-				return false;			
-			}
-			
-			/* Set up a change handler for the number inputs */			
+			/* Set up a change handler for each of the number inputs */			
 			sides.onchange = function(){
 				render();
 			}	
@@ -181,12 +174,11 @@
 		margin: 5px 0;
 		display: block:
 		width: 150px; 
-		border: 1px solid black;
-	
 	}
 
 	input{
 		width: 200px;
+		margin: 2px 5px;
 	}
 	</style>
 </head>
@@ -201,7 +193,6 @@
 			<br />
 			<label>Scale</label><input type="number" id="scale" min="10" max="100" value="20" />			
 			<br />			
-			<input type="submit" id="submitButton" />
 	</div>
 </body>
 </html>
