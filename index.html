@@ -9,25 +9,40 @@
 
 		window.onload = function(){
 							
-			/* Set up the click handler for the submit button */
-			document.getElementById('submit').onclick = function(){
-			
+			/* Cache some DOM elements */						
+			var sides = document.getElementById('sides');
+			var angle = document.getElementById('angle');			
+			var scale = document.getElementById('scale');							
+			var submit = document.getElementById('submitButton');
+								
+			/* A rendering function to be used to clear the canvas then draw a poly */					
+			function render(){
 				clearCanvas();
+				drawPolygon(parseFloat(sides.value), parseFloat(scale.value), parseFloat(angle.value));
+			}
 			
-				var sides = document.getElementById('sides').value;
-				var angle = document.getElementById('angle').value;			
-				var scale = document.getElementById('scale').value;							
+			/* Set up the click handler for the submit button */
+			submit.onclick = function(){
+				render();
+				return false;			
+			}
 			
-				console.log("Sides: " + sides);
-				console.log("Angle: " + angle);				
-				console.log("Scale: " + scale);				
+			/* Set up a change handler for the number inputs */			
+			sides.onchange = function(){
+				render();
+			}	
 			
-				drawPolygonWithSidesScaleAndRotation(sides, scale, angle);
+			angle.onchange = function(){
+				render();
+			}
 			
-				return false;
-			}			
+			scale.onchange = function(){
+				render();
+			}
 			
-
+			/* Render the initial poly */
+			render();
+			
 		}
 
 		/* clear the canvas */
@@ -70,72 +85,72 @@
 		}
 
 		/* Draw a polygon with given sides */
-		function drawPolygonWithSidesScaleAndRotation(sides, scale, rotation){
-			
-			// Set up the canvas and the context
-			var canvas = document.getElementById('canvas');
-			var context = null;
+		function drawPolygon(sides, scale, rotation){
+	
+	 // Set up the canvas & the context
+            var canvas = document.getElementById('canvas');
+            var context = null;
 
-			if(canvas.getContext){
-				context = canvas.getContext('2d');	
-			}	
+            if(canvas.getContext){
+                context = canvas.getContext('2d');    
+            }    
 
-			//	If there's no context, we can't work...
-			if(!context){
-				console.log("No context");
-				return;
-			}
+            //    If there's no context, we can't work...
+            if(!context){
+                console.log("No context");
+                return;
+            }
 
-			//begin our path
-			context.beginPath();
-			
-			//Set up a constant for the number of degrees
-			var DEGREES_IN_CIRCLE = 360.0;
-			
-			//Get the size of each angle 
-			var angle = DEGREES_IN_CIRCLE/sides;
-			
-			//Draw out the sides
-			for(var i=0;i<=sides;i++){
-				
-				//  Calculate the working angle in degrees
-				var workingAngle = i*angle;
-				
-		        //  Convert to radians					
-		        var angleInRadians = radiansFromDegrees(workingAngle+rotation);
-		        
-		        console.log("Angle: " + angleInRadians);
-		        
-				//Get a new centered point
-				var point = Point();	
-					        
-		        //	Calculate the X and Y coordinates
-		        point.x = Math.sin(angleInRadians);
-		        point.y = Math.cos(angleInRadians);
-		        
-		        //Scale the polygon
-		        point.x = point.x * scale;
-		        point.y = point.y * scale;
+            //begin our path
+            context.beginPath();
+            
+            //Set up a constant for the number of degrees
+            var DEGREES_IN_CIRCLE = 360.0;
+            
+            //Get the size of each angle 
+            var angle = DEGREES_IN_CIRCLE/sides;
+            
+            //Get a new centered point
+            var point = Point();
+            
+            //Draw out the sides
+            for(var i=0;i<=sides;i++){
+                
+                //  Calculate the working angle in degrees
+                var workingAngle = i*angle;
+                
+                //  Convert to radians                    
+                var angleInRadians = radiansFromDegrees(workingAngle+rotation);
+                
+                //    Calculate the X and Y coordinates
+                point.x = Math.cos(angleInRadians);
+                point.y = Math.sin(angleInRadians);
 
-				//center the polygon
-		        point.x += canvas.width/2;
-		        point.y += canvas.height/2;
-				
-				//	Move to the start position
-				if(i==0){
-					context.moveTo(point.x, point.y);
-				}				
-				
-				//Draw the line
-				context.lineTo(point.x, point.y);
-			}
-			
-			//close the path
-			context.closePath();
-			
-			//Perform the drawing
-			context.stroke();
-		}	
+                console.log(point);
+                
+                //Scale the polygon
+                point.x *= scale;
+                point.y *= scale;
+
+                //center the polygon
+                point.x += canvas.width/2;
+                point.y += canvas.height/2;
+                
+                //    Move to the start position
+                if(i==0){
+                    context.moveTo(point.x, point.y);
+                }
+                
+                //Draw the line
+                context.lineTo(point.x, point.y);
+            }
+            
+            //close the path
+            context.closePath();
+            
+            //Perform the drawing
+            context.stroke();
+            }
 	
 	</script>	
 	<style>
@@ -182,15 +197,13 @@
 		<canvas id="canvas">
 		Your browser doesn't support canvas.
 		</canvas>	
-		<form id="controls">
 			<label>Sides</label><input type="number" id="sides" min="3" max="30" value="3"/>
 			<br />
 			<label>Angle</label><input type="number" id="angle" min="0" max="360" value="0" />			
 			<br />
 			<label>Scale</label><input type="number" id="scale" min="10" max="100" value="20" />			
 			<br />			
-			<input type="submit" id="submit" />
-		</form>
+			<input type="submit" id="submitButton" />
 	</div>
 </body>
 </html>
